@@ -1,23 +1,39 @@
 <template>
-<header class="sticky top-0 z-50 flex items-center justify-between flex-none w-full h-16 px-5 bg-white dark:bg-netblack dark:border-zinc-700">
+<header class="sticky top-0 z-50 flex items-center justify-between flex-none w-full h-16 px-16 bg-white border-b border-gray-100 shadow-sm dark:bg-netblack dark:border-zinc-700">
+<section class="flex items-center gap-12">
+    <div class="flex items-center flex-none gap-1">
+        <router-link class="" to="/"><p class="text-2xl font-bold whitespace-nowrap">Plan Order GALLERY</p></router-link>
+    </div>
 
-<div class="flex items-center flex-none gap-1">
-    <router-link class="" to="/"><p class="text-2xl font-bold whitespace-nowrap">디자인 윈도우</p></router-link>
-</div>
-    
-    
-    
+    <ul class="flex gap-5">
+        <li
+        v-for="item in topHeaderItems"
+        :key="item.id"
+        @click="handleClick(item)"
+        class="text-gray-400 dark:text-gray-300"
+        > <p class="duration-300 " :class="{ '!font-semibold text-gray-900 dark:!text-white': isActive(item.link) }">{{ item.label }}</p>
+        </li>
+    </ul>
+</section>
+
     <div class="flex items-center gap-3">
-        <button class="flex items-center justify-center size-8">
-            <span class="pi pi-search !text-2xl"></span>
+        <button class="flex items-center justify-center size-8" @click="toggleDarkMode">
+            <span :class="isDarkMode ? 'pi pi-sun' : 'pi pi-moon'" class="!text-2xl"></span>
         </button>
 
-        <button class="flex items-center justify-center size-8" @click="toggleNotificationPopover($event)">
-            <IconAvatar class="*:text-blue-200 !size-10 "/>
-        </button>
-        <Popover class="" ref="notificationPopover" dismissable> 
+        <!-- <button class="flex items-center justify-center size-8">
+            <span class="pi pi-bell !text-2xl"></span>
+        </button> -->
+
+        <div class="flex items-center gap-2 text-sm surface-400 ">
+          <button class="flex items-center justify-center size-8 text-muted-color" @click="toggleNotificationPopover($event)">
+              <IconAvatar class="*:text-blue-200 !size-10 "/>
+          </button>
+          <p class="text-gray-500 dark:text-gray-300">김준구 대리</p>
+        </div>
+        <Popover class="" ref="notificationPopover" dismissable>
             <div class="flex flex-col">
-                <Button :label="t('btn.logout')" icon="pi pi-sign-out" severity="danger" text  size="small" @click="getLogOut"/>
+                <Button label="로그아웃" icon="pi pi-sign-out" severity="danger" text  size="small" @click="getLogOut"/>
             </div>
         </Popover>
 
@@ -30,36 +46,40 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, watch, defineEmits,onMounted } from 'vue';
+import { ref, nextTick } from 'vue';
 import IconAvatar from '@/components/icons/IconAvatar.vue'
+import { useRouter, useRoute } from 'vue-router';
+const route = useRoute();
+
+// Vue Router 가져오기
+const router = useRouter();
+
+const topHeaderItems = ref([
+    { id: 1, label: '홈', link: '/'},
+    { id: 2, label: '블라인드', link: '/blind'},
+    { id: 3, label: '커튼', link: '/curtain'},
+]);
+
+
+// 클릭 핸들러
+const handleClick = (item: { id: number; link: string; label: string }) => {
+    // 나머지 항목은 링크 이동
+    navigateTo(item.link);
+};
+
+// 링크로 이동
+const navigateTo = (link: string) => {
+router.push(link);
+};
+
+// 현재 경로와 링크를 비교하여 활성화 여부 판단
+const isActive = (link: string) => {
+return route.path === link; // 현재 경로와 비교
+};
 
 // import { changeLanguage } from '@/locales/i18n'; // named import로 수정
 
-import Button from 'primevue/button';
 import Popover from 'primevue/popover';
-
-const headerState = ref(true); // 불리언 변수, 중요 여부
-
-
-const headMenu = ref([]); // 메뉴 항목을 정의합니다.
-const hoveredIndex = ref(-1); // 현재 hover된 인덱스를 저장합니다.
-
-
-const emit = defineEmits<{
-  (e: 'toggleHeader'): void;
-}>();
-
-function handleClick() {
-  emit('toggleHeader'); // 부모에 toggleHeader 이벤트를 발생시킴
-}
-
-const moSideHeader = ref(false);
-
-// const login = useLoginStore();
-
-// const getLogOut = () => {
-//     login.getLogout();
-// }
 
 const toggleDarkMode = () => {
     const element = document.querySelector('html');
@@ -97,7 +117,7 @@ const toggleAlarmPopover = async (event: MouseEvent) => {
     }
 };
 
-const isDarkMode = ref(false); 
+const isDarkMode = ref(false);
 const menu = ref();
 const items = ref([
     {
@@ -112,7 +132,7 @@ const items = ref([
             {   label: '한국어',
                 command: () => changeLanguage('ko'),
             },
-            { 
+            {
                 label: 'Engilsh',
                 command: () => changeLanguage('en'),
             }
@@ -144,8 +164,10 @@ const items = ref([
 
 // 컴포넌트가 마운트될 때 기본 로케일 설정
 // onMounted(() => {
-   
+
 //     datePickerLocale.value = datePickerLocales[locale.value]; // 초기 데이트 피커 로케일 설정
 // });
+
+
  </script>
 

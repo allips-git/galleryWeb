@@ -1,0 +1,323 @@
+.custom-dialog-center{
+    &.custom-dialog-mini.p-dialog{
+        width: calc(100% - 2rem) !important;
+        max-width: 400px !important;
+        .p-dialog-header{
+            padding-right: 0.5rem;
+        }
+    }
+    &.p-dialog {
+        max-height: calc(100% - 1rem);
+        margin-top: 1rem;
+        width: 100% !important;
+        height: 100%;
+        overflow: hidden;
+        // background-color: ;
+
+        max-width: 100% ;
+
+
+            max-height: 90%;
+            margin-top: 0rem;
+            width: calc(100% - 2rem) !important;
+            max-width: 1000px ;
+
+
+        &.p-dialog-maximized{
+            width: 100vw !important;
+            max-width: 100vw !important;
+            height: 100vh !important;
+            max-height: 100vh !important;
+        }
+    }
+    .p-dialog-maximize-button{
+        display: none;
+    }
+    .p-dialog-content{
+        padding: 0;
+        scrollbar-width: thin;
+        // border-radius: 1rem;
+    }
+    .custom-tap-panels{
+        .p-tabpanels{
+            padding: 0;
+        }
+    }
+    .edit_button-tab_box{
+        .p-tablist-tab-list{
+            padding-right: 20px;
+            padding-left: 20px;
+            gap: 12px;
+        }
+    }
+
+    .p-dialog-header, .p-drawer-header{
+        padding: 0.25rem 20px;
+        .p-dialog-title , .p-drawer-title{
+            font-size: 13px;
+        }
+    }
+    .custom-tab{
+        height:auto;        
+    }
+    &.dialog-title-large{
+        .p-dialog-header, .p-drawer-header{
+            padding: 12px 20px;
+        }
+        .p-dialog-title , .p-drawer-title{
+            font-size: 18px;
+        }
+    }
+    .table-only-box{
+        height: calc(100% - 66.5px);
+    }
+    &.table-only{
+        overflow-y: hidden;
+        .custom-datatable {
+            height: 100%;
+            .p-datatable{
+            height: 100%
+            }
+            .p-datatable-table-container{
+                height: calc(100% - 58px);
+            }            
+        }
+        .p-dialog-content{
+        overflow-y: hidden;
+        height: calc(100% - 66.5px);
+        }
+    }
+}
+
+.custom-datatable{
+    border-bottom-width: 1px;
+    border-style: solid;
+    border-color: var(--p-datatable-body-cell-border-color);
+    
+    
+    // @include respond-to(md) {
+    //     border-bottom: none;
+    // }
+
+    .p-datatable-header{
+        border: none;
+        padding: 0.75rem 0.75rem ;
+    }
+ 
+    .p-row-odd{
+        .p-datatable-frozen-column{
+            background: var(--p-datatable-row-striped-background);
+
+        }
+        & + .p-datatable-row-expansion{
+            background-color: var(--p-datatable-row-striped-background);
+            }
+        } 
+    .p-iconfield{
+            max-width: 300px;
+            width: 100%;
+        input{
+            // font-size: 0.875rem;
+            width: 100%;
+            // padding: 8px 12px 8px 36px ;
+        }
+        
+    }
+    .p-datatable-tfoot > tr > td{
+        border-bottom: transparent;
+        border-top-width: 1px;
+        background-color: var(--p-content-hover-background);;
+    }
+    
+    // 데이터 테이블 호버 이벤트
+    .p-datatable-hoverable .p-datatable-tbody > tr:not(.p-datatable-row-selected):hover{
+        background: var(--p-datatable-row-hover-background);
+        >td{
+            background: var(--p-datatable-row-hover-background);
+        }
+        .row-hover{
+            font-weight: 700;
+            text-decoration: underline;
+        }
+    }
+    .p-datatable-empty-message:hover{
+        background: transparent !important;
+        td{
+            background: transparent !important;
+        }
+    }
+    // 데이터 테이블 위
+    .p-datatable-table-container{
+        border-top: 1px solid var(--p-datatable-header-cell-border-color);
+        max-height: calc(100vh - 162.5px);
+        // @include respond-to(md) {
+        //     border-color: var(--p-datatable-header-cell-border-color);
+        //     border-right: 0px solid var(--p-datatable-header-cell-border-color);
+        //     border-left: 0px solid var(--p-datatable-header-cell-border-color);
+        //     border-top: 1px solid var(--p-datatable-header-cell-border-color);
+        //     border-bottom: 1px solid var(--p-datatable-header-cell-border-color);
+        //     box-sizing: border-box;
+        // }
+    }
+    &.popup-datatable{
+        border: 0px;
+        .p-datatable-table-container{
+            border-right: 1px solid var(--p-datatable-header-cell-border-color);
+            border-left: 1px solid var(--p-datatable-header-cell-border-color);
+            border-top: 1px solid var(--p-datatable-header-cell-border-color);
+            border-bottom: 1px solid var(--p-datatable-header-cell-border-color);
+            // border-radius: 0.5rem;
+            box-sizing: border-box;
+        }
+        .p-datatable-header{
+            padding: 0.75rem  !important;
+        }
+     
+    }
+    // 검색해더 필터 버튼
+    .p-button.p-component.p-button-icon-only.p-button-secondary.p-button-rounded.p-button-text.p-datatable-column-filter-button{
+        display: none;
+    }
+    .p-button.p-component.p-button-icon-only.p-button-secondary.p-button-rounded.p-button-text.p-datatable-column-filter-clear-button{
+        display: none;
+    }
+
+    .p-datatable-sort-icon{
+        width: 0.75rem;
+        height: 0.75rem;
+        vertical-align: baseline;
+    }
+
+    // 데이터 테이블 체크 박스
+    &.custom-checkbox-datatable{
+        .p-datatable-header-cell:first-child{
+            padding: var(--p-datatable-body-cell-padding);
+        }   
+    }
+
+    // 데이터 테이블 검색해더 공통
+    .p-datatable-header-cell{
+        padding: 0.5rem;
+        .p-inputtext{
+            width: 100%;
+            }    
+        .p-select{
+            font-size: 0.875rem;
+        }
+        .p-select-label{
+            padding-left: 0.625rem;
+            padding-right: 0.625rem;
+            padding-top: 0.468rem;
+            padding-bottom: 0.468rem;
+        }
+            // 테이블 데이트 피크
+    .p-datepicker{
+        .p-datepicker-input{
+            font-size: 0.875rem;
+            padding-top: 0.325rem;
+            padding-bottom:  0.325rem;
+        }
+        .p-datepicker-input-icon-container{
+            height: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+}
+
+    .p-datatable-thead{
+        > tr:nth-child(2) {
+            th:first-child{
+                padding-left: 2rem !important;
+                .p-checkbox{
+                    margin-bottom: 2px;
+                }
+            }
+        }
+        > tr{
+            &:first-child {
+                border-radius: 0.5rem;
+                border: none;
+                th{
+                    padding: 0.75rem 1rem;
+                    white-space:  nowrap;
+                }
+            }
+            
+            th:last-child{
+                padding-right: 2rem !important;
+            }
+            th:first-child{
+                padding-left: 2rem !important;
+            }
+        }
+        
+        
+    }
+
+    .p-datatable-tbody{
+        overflow-y: auto;
+    
+        > tr{
+            cursor: pointer;
+            &:last-child > td{
+                border: none;
+            }
+        }
+    }
+}
+.p-datatable-tbody > tr{
+    vertical-align: middle;
+    &.p-datatable-row-expansion{
+        background-color: var(--p-datatable-row-background);
+    }
+    td:last-child{
+        padding-right: 2rem;
+    }
+    td:first-child{
+        padding-left: 2rem !important;
+        .p-checkbox{
+            margin-bottom: 1px;
+        }
+    }
+}
+
+// 데이터 테이블 커스텀
+// 필터 옆 아이콘 안보이게 처리
+.p-button.p-component.p-button-icon-only.p-button-secondary.p-button-rounded.p-button-text.p-datatable-column-filter-button{
+    display: none;
+    
+}
+.p-button.p-component.p-button-icon-only.p-button-secondary.p-button-rounded.p-button-text.p-datatable-column-filter-clear-button{
+    display: none;
+}
+.p-datatable-header{
+    border: none;
+    background-color: transparent !important;
+}
+
+.p-datatable-column-title{
+    font-size: 0.875rem;
+    span{
+        display: flex;
+        align-items: center;
+        align-self: center;
+    }
+}
+.p-inputnumber-input{
+    width: 100%;
+}
+.custom-popover-listbox{
+    .p-popover-content {
+        padding:0.275rem;
+        border: none !important;
+    }
+}
+.p-listbox{
+    border: none !important;;
+}
+
+.dark{
+    --p-overlay-modal-background: #141414
+}

@@ -1,14 +1,11 @@
 import { createWebHistory, createRouter, } from "vue-router";
 
 // RouteMeta 인터페이스 정의
-interface RouteMeta {
-    showTopHeader?: boolean; // showTopHeader 메타 필드 정의
-    showAppFooter?: boolean;
-    showBackHeader?: boolean
-    title:string;
-  }
 
 import Index from "@/views/index.vue";
+import blindView from "@/views/blindView.vue";
+import curtainView from "@/views/curtainView.vue";
+import keywordView from "@/views/keywordView.vue";
 
 
 
@@ -18,8 +15,26 @@ const routes = [
         path: "/",
         name: "MainPage",
         component: Index,
-        meta: { showTopHeader: true, showAppFooter: true } as RouteMeta
+
     },
+
+    {
+      path: "/blind",
+      name: "blindView",
+      component: blindView,
+  },
+
+    {
+      path: "/curtain",
+      name: "curtainView",
+      component: curtainView,
+  },
+
+  {
+    path: "/detail",
+    name: "keywordView",
+    component: keywordView,
+},
 
 ]
 

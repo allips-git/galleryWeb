@@ -1,5 +1,6 @@
 import './assets/main.css'
 import 'primeicons/primeicons.css';
+import './assets/primevue_custom.scss';
 
 import { createApp } from 'vue'
 
@@ -70,6 +71,10 @@ app.use(PrimeVue, {
         preset: MyPreset,
         options: {
             darkModeSelector: '.dark', // 다크 모드 선택기
+            cssLayer: {
+              name: 'primevue',
+              order: 'tailwind-base, primevue, tailwind-utilities'
+          }
         }
     },
 });
