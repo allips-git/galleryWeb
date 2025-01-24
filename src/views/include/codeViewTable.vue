@@ -7,8 +7,6 @@
             removableSort
             dataKey="itemCd"
             filterDisplay="row"
-            :loading="loading"
-            :globalFilterFields="['itemNm']"
             selectionMode="single"
         >
             <template #header>
@@ -18,7 +16,7 @@
                             <InputIcon>
                                 <i class="pi pi-search" />
                             </InputIcon>
-                            <InputText placeholder="제품명을 검색해주세요" v-model="filters.global.value" @keyup.enter="getList"/>
+                            <InputText placeholder="제품명을 검색해주세요" v-model="product['search']" @keyup.enter="product.getList()"/>
                         </IconField>
                     </div>
                 </div>
@@ -83,21 +81,18 @@ import Column from 'primevue/column';
 import IconField from 'primevue/iconfield';
 import InputText from 'primevue/inputtext';
 import InputIcon from 'primevue/inputicon';
-
-import { ref, onMounted, defineEmits } from 'vue';
+import { ref, onMounted } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
+import { useProductStore } from '@/stores';
 
-const emit = defineEmits(['get-close']);
-
-const loading = ref(false);
+const product = useProductStore();
 const filters = ref({
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    num: { value: null, matchMode: FilterMatchMode.EQUALS },
-    itemCd: { value: null },
-    itemNm: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    itemGbNm: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    prodGbNm: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    saleUnit: { value: null, matchMode: FilterMatchMode.CONTAINS }
+    num         : { value: null, matchMode: FilterMatchMode.EQUALS },
+    itemCd      : { value: null },
+    itemNm      : { value: null, matchMode: FilterMatchMode.CONTAINS },
+    itemGbNm    : { value: null, matchMode: FilterMatchMode.CONTAINS },
+    prodGbNm    : { value: null, matchMode: FilterMatchMode.CONTAINS },
+    saleUnit    : { value: null, matchMode: FilterMatchMode.CONTAINS }
 });
 
 // 더미 데이터 정의
@@ -108,13 +103,6 @@ const dummyItems = ref([
     { num: 4, itemCd: 'A004', itemNm: '제품 D', itemGbNm: '타입 D', prodGbNm: '분류 D', saleUnit: 40000 },
 ]);
 
-
-const getList = async () => {
-    loading.value = true;
-    // 데이터 가져오기 로직 추가
-    loading.value = false;
-}
-
 const getListClick = (itemCd: string, itemNm: string, event: Event) => {
     const list = dummyItems.value.find(item => item.itemCd === itemCd); // 더미 데이터에서 찾기
     if (list) {
@@ -123,6 +111,6 @@ const getListClick = (itemCd: string, itemNm: string, event: Event) => {
 }
 
 onMounted(async () => {
-    await getList();
+    await product.getList();
 });
 </script>
