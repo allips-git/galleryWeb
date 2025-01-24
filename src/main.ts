@@ -19,6 +19,7 @@ import ToastService from 'primevue/toastservice';
 import Dialog from 'primevue/dialog';
 import Tooltip from 'primevue/tooltip';
 import KeyFilter from 'primevue/keyfilter';
+import { setupStore } from '@/stores'
 
 const app = createApp(App)
 
@@ -79,5 +80,6 @@ app.use(PrimeVue, {
     },
 });
 
+setupStore(app);
 app.use(router);
 app.mount('#app');

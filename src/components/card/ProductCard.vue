@@ -1,29 +1,19 @@
 <template>
-    <div class="relative w-full group"
-    >
-      <img :src="item.image" :alt="item.alt" class="z-50 rounded-lg"
-        :class="{ 'aspect-[3/4]': aspectRatio }"
-        @mouseover="appearTooltip"
+    <div class="relative w-full group">
+        <img :src="item['filePath']" class="z-50 rounded-lg" :class="{ 'aspect-[3/4]': aspectRatio }" @mouseover="appearTooltip"/>
+        <div class="flex items-center justify-between mt-2">
+            <p class="">{{ item['itemNm'] }}</p>
+            <button class="flex items-center justify-center size-6">
+                <span class="pi pi-ellipsis-v !text-sm"></span>
+            </button>
+        </div>
+        <p class="text-sm text-gray-600 dark:text-gray-400">컬러 {{ item['cnt'] }}개</p>
 
-      />
-      <div class="flex items-center justify-between mt-2">
-        <p class=""
-        >제품명</p>
-        <button class="flex items-center justify-center size-6">
-          <span class="pi pi-ellipsis-v !text-sm"></span>
-        </button>
-      </div>
-      <p class="text-sm text-gray-600 dark:text-gray-400">컬러 12개</p>
-
-              <!-- 툴팁 -->
-              <transition name="fade">
-                <div
-                v-show="showTooltip"
-                @mouseleave="hideTooltip"
-                class="transition-all duration-300 w-[120%] h-auto bg-white rounded-lg shadow-md tooltip dark:bg-netblack"
-                @click="productSetPopup = true"
-            >
-            <!-- :class="{'opacity-100  w-[120%] h-[120%] scale-150': showTooltip, 'opacity-0 w-full h-full': !showTooltip}" -->
+        <!-- 툴팁 -->
+        <transition name="fade">
+            <div v-show="showTooltip" @mouseleave="hideTooltip"
+                class="transition-all duration-300 w-[120%] h-auto bg-white rounded-lg shadow-md tooltip dark:bg-netblack" @click="productSetPopup = true">
+                <!-- :class="{'opacity-100  w-[120%] h-[120%] scale-150': showTooltip, 'opacity-0 w-full h-full': !showTooltip}" -->
                 <img :src="item.image" :alt="item.alt" class="rounded-lg aspect-[16/9] object-cover" />
 
                 <ul class="flex flex-col gap-2 p-4">
@@ -60,26 +50,22 @@ import productSetPop from '@/views/include/productSet.vue'
 const showTooltip = ref(false)
 
 const hideTooltip = () => {
-    setTimeout(() => {
-        showTooltip.value = false; // 약간의 지연 후 툴팁 숨김
-    }, 100); // 100ms 후에 툴팁 숨김
+    showTooltip.value = false; // 약간의 지연 후 툴팁 숨김
 };
 
 const appearTooltip = () => {
-    setTimeout(() => {
-        showTooltip.value = true; // 약간의 지연 후 툴팁 숨김
-    }, 100); // 100ms 후에 툴팁 숨김
+    showTooltip.value = true; // 약간의 지연 후 툴팁 숨김
 };
 
-const props = defineProps({
-item: {
-    type: Object,
-    required: true
-},
-aspectRatio: {
-    type: Boolean,
-    required: true
-}
+defineProps({
+    item: {
+        type: Object,
+        required: true
+    },
+    aspectRatio: {
+        type: Boolean,
+        required: true
+    }
 });
 
 const productSetPopup = ref(false);
