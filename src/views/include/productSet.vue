@@ -16,33 +16,33 @@
                 <p class="w-[120px]">code No</p>
                 <IconField class="w-full max-w-96" @click="codeTablePopup = true">
                     <InputIcon class="pi pi-search" />
-                    <InputText placeholder="제품 찾기" class="w-full "/>
+                    <InputText :value="product['itemCd']" placeholder="제품 찾기" class="w-full" readonly/>
                 </IconField>
             </li>
 
             <li class="flex items-center custom-input-border-b ">
                 <p class="w-[120px]">재질</p>
-                <InputText placeholder="재질을 입력해주세요." class="w-full max-w-96"/>
+                <InputText v-model="product['texture']" placeholder="재질을 입력해주세요." class="w-full max-w-96"/>
             </li>
 
             <li class="flex items-center custom-input-border-b ">
                 <p class="w-[120px]">암막율</p>
-                <InputText placeholder="암막율을 입력해주세요." class="w-full max-w-96"/>
+                <InputText v-model="product['rate']" placeholder="암막율을 입력해주세요." class="w-full max-w-96"/>
             </li>
 
             <li class="flex items-center custom-input-border-b ">
                 <p class="w-[120px]">기타 부속</p>
-                <InputText placeholder="예) 알리미늄 풀커버" class="w-full max-w-96"/>
+                <InputText v-model="product['etc']" placeholder="예) 알리미늄 풀커버" class="w-full max-w-96"/>
             </li>
 
             <li class="flex items-center custom-input-border-b ">
                 <p class="w-[120px]">원재료 국가</p>
-                <InputText placeholder="원재료 국가를 입력해주세요." class="w-full max-w-96"/>
+                <InputText v-model="product['origin']" placeholder="원재료 국가를 입력해주세요." class="w-full max-w-96"/>
             </li>
 
             <li class="flex items-center custom-input-border-b ">
                 <p class="w-[120px]">방염가능여부</p>
-                <Select placeholder="선택" class="w-full max-w-96"/>
+                <Select :options="flame" v-model="product['flame']" optionLabel="name" optionValue="value" placeholder="선택" class="w-full max-w-96"/>
             </li>
 
             <li class="flex items-start custom-input-border-b ">
@@ -95,6 +95,7 @@
                     <Popover class="custom-popover-listbox" ref="morePopover" dismissable>
                         <ul class="w-[150px]">
                             <li class="w-full px-3 py-2 font-bold text-sky-500 hover:bg-gray-50">대표사진 등록</li>
+                            <li class="w-full px-3 py-2 font-bold text-red-500 hover:bg-gray-50">색상 삭제</li>
                         </ul>
                     </Popover>
                     </div>
@@ -111,7 +112,6 @@
                             </div>
                             <div class="absolute inset-0">
                                 <img :src="item.image" :alt="item.text" class="w-full h-full aspect-square" />
-
                                 <div class="absolute right-2 top-2  !border-0 !text-gray-600 rounded-full size-8 bg-gray-900 bg-opacity-10">
                                     <Button size="small" icon="pi pi-times" rounded text severity="danger" class="!w-full !h-full"/>
                                 </div>
@@ -139,13 +139,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import Popover from 'primevue/popover';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import Textarea from 'primevue/textarea';
 import Checkbox from 'primevue/checkbox';
 import codeViewTable from '@/views/include/codeViewTable.vue';
+import { ref } from 'vue';
+import { useProductStore } from '@/stores';
+
+const product   = useProductStore();
+const flame     = ref([
+    { name  : '가능', value : 'Y' },
+    { name  : '불가능', value : 'N' }
+]);
 
 const codeTablePopup = ref(false)
 

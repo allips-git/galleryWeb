@@ -6,6 +6,7 @@ import type { App } from 'vue';
 // import { usePopupStore } from './modules/popup';
 import { useLoginStore } from './modules/login';
 import { useStateStore } from './modules/state';
+import { usePopupStore } from './modules/popup';
 import { useMainStore } from './modules/main';
 import { useDetailStore } from './modules/detail';
 import { useProductStore } from './modules/product';
@@ -21,6 +22,7 @@ export {
     pinia,
     useLoginStore,
     useStateStore,
+    usePopupStore,
     useMainStore,
     useDetailStore,
     useProductStore

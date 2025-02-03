@@ -2,12 +2,14 @@
     <div class="custom-datatable">
         <DataTable
             v-model:filters="filters"
-            :value="dummyItems"
+            :value="product['list']"
             stripedRows
             removableSort
             dataKey="itemCd"
             filterDisplay="row"
             selectionMode="single"
+            @row-click="(event) => getListClick(event.data.itemCd)"
+            ref="dataTable"
         >
             <template #header>
                 <div class="flex items-center justify-between">
@@ -45,27 +47,9 @@
                 </template>
             </Column>
 
-            <Column field="itemGbNm" header="품목구분" sortable class="custom-table-column-min-w">
+            <Column field="icCnt" header="색상 갯수" sortable class="custom-table-column-min-w">
                 <template #body="{ data }">
-                    {{ data.itemGbNm }}
-                </template>
-                <template #filter="{ filterModel, filterCallback }">
-                    <InputText size="small" v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="검색" />
-                </template>
-            </Column>
-
-            <Column field="prodGbNm" header="생산 구분" sortable class="custom-table-column-min-w">
-                <template #body="{ data }">
-                    {{ data.prodGbNm }}
-                </template>
-                <template #filter="{ filterModel, filterCallback }">
-                    <InputText size="small" v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="검색" />
-                </template>
-            </Column>
-
-            <Column field="saleUnit" header="단가" sortable class="custom-table-column-min-w">
-                <template #body="{ data }">
-                    {{ data.saleUnit }}원
+                    {{ data.icCnt }}
                 </template>
                 <template #filter="{ filterModel, filterCallback }">
                     <InputText size="small" v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="검색" />
@@ -85,32 +69,34 @@ import { ref, onMounted } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { useProductStore } from '@/stores';
 
-const product = useProductStore();
-const filters = ref({
+const product   = useProductStore();
+const dataTable = ref(null);
+const filters   = ref({
     num         : { value: null, matchMode: FilterMatchMode.EQUALS },
     itemCd      : { value: null },
     itemNm      : { value: null, matchMode: FilterMatchMode.CONTAINS },
-    itemGbNm    : { value: null, matchMode: FilterMatchMode.CONTAINS },
-    prodGbNm    : { value: null, matchMode: FilterMatchMode.CONTAINS },
-    saleUnit    : { value: null, matchMode: FilterMatchMode.CONTAINS }
+    icCnt       : { value: null, matchMode: FilterMatchMode.CONTAINS }
 });
 
-// 더미 데이터 정의
-const dummyItems = ref([
-    { num: 1, itemCd: 'A001', itemNm: '제품 A', itemGbNm: '타입 A', prodGbNm: '분류 A', saleUnit: 10000 },
-    { num: 2, itemCd: 'A002', itemNm: '제품 B', itemGbNm: '타입 B', prodGbNm: '분류 B', saleUnit: 20000 },
-    { num: 3, itemCd: 'A003', itemNm: '제품 C', itemGbNm: '타입 C', prodGbNm: '분류 C', saleUnit: 30000 },
-    { num: 4, itemCd: 'A004', itemNm: '제품 D', itemGbNm: '타입 D', prodGbNm: '분류 D', saleUnit: 40000 },
-]);
+const getListClick = (itemCd: string) => {
+    console.log(itemCd);
+}
 
-const getListClick = (itemCd: string, itemNm: string, event: Event) => {
-    const list = dummyItems.value.find(item => item.itemCd === itemCd); // 더미 데이터에서 찾기
-    if (list) {
-        // 필요한 작업 수행
+const getScroll = async (event: Event) => {
+    const { scrollTop, clientHeight, scrollHeight } = event.target as HTMLElement;
+
+    if (scrollTop + clientHeight >= scrollHeight) 
+    {
+        if(product['more'])
+        {
+            await product.getList();
+        }
     }
 }
 
 onMounted(async () => {
+    await product.getListReset();
     await product.getList();
+    dataTable.value.$el.children[1].addEventListener("scroll", getScroll);
 });
 </script>
