@@ -1,14 +1,12 @@
 import { defineStore } from 'pinia';
 import { getAxiosData, getTokenOut } from '@/assets/js/function';
-import { useLoginStore, useStateStore } from '@/stores';
+import { useLoginStore } from '@/stores';
 
 interface List {
     num         : number;
     itemCd      : string;
     itemNm      : string;
-    itemGb      : string;
-    prodNm      : string;
-    amt         : number;
+    icCnt       : string;
 }
 
 interface IcList {
@@ -32,9 +30,12 @@ interface Info {
 }
 
 interface State {
-    search  : string,
-    list    : List[],
-    info    : Info
+    search  : string;
+    list    : List[];
+    info    : Info;
+    more    : boolean;
+    start   : number;
+    limit   : number;
 }
 
 const getInfo = (): Info => {
@@ -45,7 +46,7 @@ const getInfo = (): Info => {
         rate        : 0,
         etc         : '',
         origin      : '',
-        flame       : 'N',
+        flame       : 'Y',
         prodChar    : '',
         itemGb      : '',
         gkCd        : '',
@@ -58,6 +59,7 @@ export const useProductStore = defineStore('product', {
         search  : '',
         list    : [],
         info    : getInfo(),
+        more    : true,
         start   : 0,
         limit   : 20
     }),
@@ -66,15 +68,38 @@ export const useProductStore = defineStore('product', {
         {
             const loginStore = useLoginStore();
             const params     = {
-                faCd   : loginStore['faCd'],
+                faCd   : loginStore['code'],
                 search : this.search,
                 start  : this.start,
                 limit  : this.limit
             };
 
+            console.log(params);
+
             try
             {
-                console.log(params);
+                const instance  = await getAxiosData();
+                const res       = await instance.post(`https://gallery-data.plansys.kr/keyword/getItemList`, params);
+                const list      = [];
+
+                console.log(res);
+
+                res.data.map((item, index) => {
+                    list.push({
+                        num     : index + 1,
+                        itemCd  : item.itemCd,
+                        itemNm  : item.itemNm,
+                        icCnt   : item.icCnt+'종'
+                    });
+                });
+
+                this.list  = [...this.list, ...list];
+                this.start = this.start + 20;
+
+                if(res.data.length === 0)
+                {
+                    this.more = false;
+                }
             }
             catch(e)
             {
@@ -96,6 +121,11 @@ export const useProductStore = defineStore('product', {
         async getDetail()
         {
             console.log('detail');
+        },
+        getListReset()
+        {
+            this.list  = [];
+            this.start = 0;
         }
     }
 });

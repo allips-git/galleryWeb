@@ -13,8 +13,8 @@
             </div>
         </section>
         <div class="fiex-add-btn">
-            <Button label="신규 등록" size="large" icon="pi pi-plus" class="shadow-lg" @click="productSetPopup = true" severity="contrast"/>
-            <Dialog v-model:visible="productSetPopup" modal :dismissableMask="true" :style="{ width: 'calc(100% - 16px)', minWidth:'300px', maxWidth:'700px' }" class="custom-dialog-center">
+            <Button label="신규 등록" size="large" icon="pi pi-plus" class="shadow-lg" @click="popup.getOpen('productSet')" severity="contrast"/>
+            <Dialog v-model:visible="popup['pop']['productSet']" modal :dismissableMask="true" :style="{ width: 'calc(100% - 16px)', minWidth:'300px', maxWidth:'700px' }" class="custom-dialog-center">
                 <template #header>
                     <div class="inline-flex items-center justify-center gap-2">
                         <span class="text-sm font-bold whitespace-nowrap">제품 선택</span>
@@ -31,15 +31,13 @@ import ProductCard from '@/components/card/ProductCard.vue';
 import Dialog from 'primevue/dialog';
 import productSetPop from '@/views/include/productSet.vue'
 import { useRouter } from 'vue-router';
-import { onMounted, ref } from 'vue';
-import { useStateStore, useMainStore } from '@/stores';
+import { onMounted } from 'vue';
+import { useStateStore, usePopupStore, useMainStore } from '@/stores';
 
 const router    = useRouter();
 const state     = useStateStore();
+const popup     = usePopupStore();
 const main      = useMainStore();
-
-
-const productSetPopup = ref(false);
 
 const getMove = async (gkCd: string) => {
     await state.setGkCd(gkCd);
