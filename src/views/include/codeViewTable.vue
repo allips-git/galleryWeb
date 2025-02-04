@@ -18,7 +18,7 @@
                             <InputIcon>
                                 <i class="pi pi-search" />
                             </InputIcon>
-                            <InputText placeholder="제품명을 검색해주세요" v-model="product['search']" @keyup.enter="product.getList()"/>
+                            <InputText placeholder="제품명을 검색해주세요" v-model="product['search']" @keyup.enter="getList"/>
                         </IconField>
                     </div>
                 </div>
@@ -67,8 +67,9 @@ import InputText from 'primevue/inputtext';
 import InputIcon from 'primevue/inputicon';
 import { ref, onMounted } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
-import { useProductStore } from '@/stores';
+import { usePopupStore, useProductStore } from '@/stores';
 
+const popup     = usePopupStore();
 const product   = useProductStore();
 const dataTable = ref(null);
 const filters   = ref({
@@ -78,8 +79,14 @@ const filters   = ref({
     icCnt       : { value: null, matchMode: FilterMatchMode.CONTAINS }
 });
 
-const getListClick = (itemCd: string) => {
-    console.log(itemCd);
+const getListClick = async (itemCd: string) => {
+    await product.setProductInfo(itemCd);
+    await popup.getClose('productList');
+}
+
+const getList = async () => {
+    await product.getListReset();
+    await product.getList();
 }
 
 const getScroll = async (event: Event) => {
@@ -95,8 +102,7 @@ const getScroll = async (event: Event) => {
 }
 
 onMounted(async () => {
-    await product.getListReset();
-    await product.getList();
+    await getList();
     dataTable.value.$el.children[1].addEventListener("scroll", getScroll);
 });
 </script>

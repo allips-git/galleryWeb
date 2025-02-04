@@ -8,12 +8,12 @@
 
             <div class="flex gap-2">
                 <div class="w-[calc(12.5%-0.5rem)]" v-for="(product, pIndex) in item['productList']" :key="pIndex">
-                    <ProductCard :aspectRatio="true" :item="product" />
+                    <ProductCard :aspectRatio="true" :item="product" :gkCd="item['gkCd']" />
                 </div>
             </div>
         </section>
         <div class="fiex-add-btn">
-            <Button label="신규 등록" size="large" icon="pi pi-plus" class="shadow-lg" @click="popup.getOpen('productSet')" severity="contrast"/>
+            <Button label="신규 등록" size="large" icon="pi pi-plus" class="shadow-lg" @click="getPopup" severity="contrast"/>
             <Dialog v-model:visible="popup['pop']['productSet']" modal :dismissableMask="true" :style="{ width: 'calc(100% - 16px)', minWidth:'300px', maxWidth:'700px' }" class="custom-dialog-center">
                 <template #header>
                     <div class="inline-flex items-center justify-center gap-2">
@@ -32,17 +32,23 @@ import Dialog from 'primevue/dialog';
 import productSetPop from '@/views/include/productSet.vue'
 import { useRouter } from 'vue-router';
 import { onMounted } from 'vue';
-import { useStateStore, usePopupStore, useMainStore } from '@/stores';
+import { useStateStore, usePopupStore, useMainStore, useProductStore } from '@/stores';
 
 const router    = useRouter();
 const state     = useStateStore();
 const popup     = usePopupStore();
 const main      = useMainStore();
+const product   = useProductStore();
 
 const getMove = async (gkCd: string) => {
     await state.setGkCd(gkCd);
     router.push('/detail');
 };
+
+const getPopup = async () => {
+    await popup.getOpen('productSet');
+    await product.setReset();
+}
 
 onMounted(() => {
     main.getData();
