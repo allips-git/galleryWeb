@@ -1,6 +1,6 @@
 <template>
     <div class="relative w-full group">
-        <img :src="item['filePath']" class="z-50 rounded-lg" :class="{ 'aspect-[3/4]': aspectRatio }" @mouseover="appearTooltip"/>
+        <img :src="getImage()" class="z-50 rounded-lg" :class="{ 'aspect-[3/4]': aspectRatio }" @mouseover="appearTooltip"/>
         <div class="flex items-center justify-between mt-2">
             <p class="">{{ item['itemNm'] }}</p>
             <button class="flex items-center justify-center size-6">
@@ -12,15 +12,27 @@
         <!-- 툴팁 -->
         <transition name="fade">
             <div v-show="showTooltip" @mouseleave="hideTooltip"
-                class="transition-all duration-300 w-[120%] h-auto bg-white rounded-lg shadow-md tooltip dark:bg-netblack" @click="productSetPopup = true">
+                class="transition-all duration-300 w-[120%] h-auto bg-white rounded-lg shadow-md tooltip dark:bg-netblack" @click="getInfo">
                 <!-- :class="{'opacity-100  w-[120%] h-[120%] scale-150': showTooltip, 'opacity-0 w-full h-full': !showTooltip}" -->
-                <img :src="item.image" :alt="item.alt" class="rounded-lg aspect-[16/9] object-cover" />
+                <img :src="getImage()" :alt="item.alt" class="rounded-lg aspect-[16/9] object-cover" />
 
                 <ul class="flex flex-col gap-2 p-4">
-                    <li><h2 class="text-xl font-bold">제품명 입니다아</h2></li>
-                    <li v-for="(detail, index) in productDetails" :key="index" class="flex justify-between text-sm">
-                        <p class="text-gray-600 dark:text-gray-300">{{ detail.label }}</p>
-                        <p class="font-bold" :class="{ 'text-blue-500 font-bold': detail.label === '암막율' || detail.label === '기타 부속' }">{{ detail.value }}</p>
+                    <li><h2 class="text-xl font-bold">{{ item['itemNm'] }}</h2></li>
+                    <li class="flex justify-between text-sm">
+                        <p class="text-gray-600 dark:text-gray-300">code.No</p>
+                        <p class="font-bold">123123123123123123</p>
+                    </li>
+                    <li class="flex justify-between text-sm">
+                        <p class="text-gray-600 dark:text-gray-300">재질</p>
+                        <p class="font-bold">재질 테스트</p>
+                    </li>
+                    <li class="flex justify-between text-sm">
+                        <p class="text-gray-600 dark:text-gray-300">암막율</p>
+                        <p class="font-bold text-blue-500 font-bold">50%</p>
+                    </li>
+                    <li class="flex justify-between text-sm">
+                        <p class="text-gray-600 dark:text-gray-300">기타 부속</p>
+                        <p class="font-bold text-blue-500 font-bold">아노다이징 알루미늄</p>
                     </li>
                 </ul>
                 <div class="p-4 border-t border-gray-300 border-dashed">
@@ -30,7 +42,7 @@
             </div>
         </transition>
     </div>
-    <Dialog v-model:visible="productSetPopup" modal :dismissableMask="true" :style="{ width: 'calc(100% - 16px)', minWidth:'300px', maxWidth:'700px' }" class="custom-dialog-center">
+    <Dialog v-model:visible="popup['pop']['productSet']" modal :dismissableMask="true" :style="{ width: 'calc(100% - 16px)', minWidth:'300px', maxWidth:'700px' }" class="custom-dialog-center">
         <template #header>
             <div class="inline-flex items-center justify-center gap-2">
                 <span class="text-sm font-bold whitespace-nowrap ">제품 선택</span>
@@ -42,10 +54,27 @@
 
 <script lang="ts" setup>
 import { ref, defineProps } from 'vue';
-import { useRouter } from 'vue-router';
 import Dialog from 'primevue/dialog';
 import productSetPop from '@/views/include/productSet.vue'
+import { usePopupStore, useProductStore } from '@/stores';
 
+const props = defineProps({
+    item: {
+        type: Object,
+        required: true
+    },
+    gkCd: {
+        type: String,
+        required: true
+    },
+    aspectRatio: {
+        type: Boolean,
+        required: true
+    }
+});
+
+const popup     = usePopupStore();
+const product   = useProductStore();
 
 const showTooltip = ref(false)
 
@@ -57,30 +86,14 @@ const appearTooltip = () => {
     showTooltip.value = true; // 약간의 지연 후 툴팁 숨김
 };
 
-defineProps({
-    item: {
-        type: Object,
-        required: true
-    },
-    aspectRatio: {
-        type: Boolean,
-        required: true
-    }
-});
+const getImage = () => {
+    return `https://elasticbeanstalk-ap-northeast-2-627549176645.s3.ap-northeast-2.amazonaws.com/${props.item['filePath']}`;
+}
 
-const productSetPopup = ref(false);
-
-const productDetails = ref([
-  { label: 'code.No', value: '202104041085100' },
-  { label: '재질', value: '폴리 80% / 린넨 20%' },
-  { label: '암막율', value: '68%' },
-  { label: '기타 부속', value: '아노다이징 알루미늄' },
-  { label: '재질', value: '한국' },
-]);
-
-
-
-
+const getInfo = async () => {
+    await popup.getOpen('productSet');
+    await product.getInfo(props['gkCd'], props.item['itemCd']);
+}
 </script>
 
 <style scoped>
