@@ -28,6 +28,7 @@ interface IcList {
 }
 
 interface Info {
+    glCd        : string;   /** 고유코드 */
     itemCd      : string;   /** 제품코드 */
     itemNm      : string;   /** 제품명칭 */
     texture     : string;   /** 재질 */
@@ -54,6 +55,7 @@ interface State {
 
 const getInfo = (): Info => {
     return {
+        glCd        : '',
         itemCd      : '',
         itemNm      : '',
         texture     : '',
@@ -150,6 +152,7 @@ export const useProductStore = defineStore('product', {
                 console.log(res);
 
                 const info = {
+                    glCd        : res.data['glCd'],
                     itemCd      : itemCd,
                     itemNm      : '',
                     texture     : res.data['texture'],
@@ -241,7 +244,7 @@ export const useProductStore = defineStore('product', {
             else
             {
                 info['imgFile'].push({
-                    fileSeq : info.imgFile.length + 1,
+                    fileSeq : index + 1,
                     newGb   : true,
                     file    : file,
                     url     : null,

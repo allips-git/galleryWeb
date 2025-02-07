@@ -260,7 +260,7 @@ const getRep = () => {
 
 const getProductSave = async () => {
     const formData  = new FormData();
-    const params    = {
+    const data      = {
         code    : login['code'],
         itemCd  : product['info']['itemCd'],
         texture : product['info']['texture'],
@@ -274,18 +274,26 @@ const getProductSave = async () => {
         userCd  : login['userCd']
     };
 
+    const params    = product.type === 'U' ? { glCd : product['info']['glCd'], ...data } : data;
+
     params['details'] = product['info']['icList'].map(item => {
         return {
             icCd    : item['icCd'],
             repYn   : item['repYn'] ? 'Y' : 'N',
-            files   : item['imgFile'].filter(file => file.newGb).map((file) => ({
-                fileSeq : file.fileSeq,
-                file    : file.file
-            }))
-        }
-    });
+            files   : item['imgFile'].filter(file => file.newGb || file.delYn === 'Y').map(file => {
+                const fileData = {
+                    fileSeq : file.fileSeq,
+                };
 
-    console.log(JSON.stringify(params, null, 2));
+                if (product.type === 'U') 
+                {
+                    fileData['delYn'] = file.delYn || 'N';
+                }
+                
+                return fileData;
+            })
+        };
+    });
 
     formData.append('request', new Blob([JSON.stringify(params)], {
         type: 'application/json'
@@ -300,14 +308,16 @@ const getProductSave = async () => {
         });
     });
 
-    status.value = true;
-
     let url = 'https://gallery-data.plansys.kr/keyword/insertData';
 
-    if(producct.type === 'U')
+    if(product.type === 'U')
     {
         url = 'https://gallery-data.plansys.kr/keyword/updateData';
     }
+
+    console.log(JSON.stringify(params, null, 2));
+
+    status.value = true;
 
     try
     {
