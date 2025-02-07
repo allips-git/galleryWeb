@@ -20,42 +20,32 @@
                     <li><h2 class="text-xl font-bold">{{ item['itemNm'] }}</h2></li>
                     <li class="flex justify-between text-sm">
                         <p class="text-gray-600 dark:text-gray-300">code.No</p>
-                        <p class="font-bold">123123123123123123</p>
+                        <p class="font-bold">{{ item['itemCd'] }}</p>
                     </li>
                     <li class="flex justify-between text-sm">
                         <p class="text-gray-600 dark:text-gray-300">재질</p>
-                        <p class="font-bold">재질 테스트</p>
+                        <p class="font-bold">{{ item['texture'] }}</p>
                     </li>
                     <li class="flex justify-between text-sm">
                         <p class="text-gray-600 dark:text-gray-300">암막율</p>
-                        <p class="font-bold text-blue-500 font-bold">50%</p>
+                        <p class="font-bold text-blue-500 font-bold">{{ item['rate'] }}%</p>
                     </li>
                     <li class="flex justify-between text-sm">
                         <p class="text-gray-600 dark:text-gray-300">기타 부속</p>
-                        <p class="font-bold text-blue-500 font-bold">아노다이징 알루미늄</p>
+                        <p class="font-bold text-blue-500 font-bold">{{ item['etc'] }}</p>
                     </li>
                 </ul>
                 <div class="p-4 border-t border-gray-300 border-dashed">
                     <p class="mb-1 text-sm font-bold text-gray-600 dark:text-gray-300">제품특성</p>
-                    <p class="text-sm">- 폴리 린넨 혼합 제품, 방염 가능</p>
+                    <p class="text-sm">- {{ item['prodChar'] }}</p>
                 </div>
             </div>
         </transition>
     </div>
-    <Dialog v-model:visible="popup['pop']['productSet']" modal :dismissableMask="true" :style="{ width: 'calc(100% - 16px)', minWidth:'300px', maxWidth:'700px' }" class="custom-dialog-center">
-        <template #header>
-            <div class="inline-flex items-center justify-center gap-2">
-                <span class="text-sm font-bold whitespace-nowrap ">제품 선택</span>
-            </div>
-        </template>
-        <productSetPop/>
-    </Dialog>
   </template>
 
 <script lang="ts" setup>
 import { ref, defineProps } from 'vue';
-import Dialog from 'primevue/dialog';
-import productSetPop from '@/views/include/productSet.vue'
 import { usePopupStore, useProductStore } from '@/stores';
 
 const props = defineProps({

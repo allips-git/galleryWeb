@@ -1,84 +1,59 @@
 <template>
     <div class="flex flex-col gap-16 px-16 py-10">
-      <section>
-        <div class="flex items-center gap-5 mb-5">
-          <h1 class="text-2xl font-bold">커튼의 키워드 종류 1</h1>
-          <Button label="모두보기" icon="pi pi-arrow-up-right" size="small" @click="goTokeywordView" severity="contrast"/>
-        </div>
+        <section v-for="(item, index) in main['curtain']" :key="index">
+            <div class="flex items-center gap-5 mb-5">
+                <h1 class="text-2xl font-bold">{{ item['gkNm'] }}</h1>
+                <Button label="모두보기" icon="pi pi-arrow-up-right" size="small" @click="getMove(item['gkCd'])" severity="contrast"/>
+            </div>
 
-        <div class="flex gap-2">
-          <div class="w-[calc(12.5%-0.5rem)]" v-for="(item, index) in slides" :key="index">
-            <ProductCard :aspectRatio="true" :item="item" />
-          </div>
-        </div>
-
-      </section>
-
-      <section>
-        <div class="flex items-center gap-5 mb-5">
-          <h1 class="text-2xl font-bold">커튼의 키워드 종류 2</h1>
-          <Button label="모두보기" icon="pi pi-arrow-up-right" size="small" @click="goTokeywordView" severity="contrast"/>
-        </div>
-
-        <div class="flex gap-2">
-          <div class="w-[calc(12.5%-0.5rem)]" v-for="(item, index) in slides2" :key="index">
-            <ProductCard :aspectRatio="true" :item="item" />
-          </div>
-        </div>
-      </section>
-      <div class="fiex-add-btn">
-          <Button label="신규 등록" size="large" icon="pi pi-plus" class="shadow-lg" @click="productSetPopup = true" severity="contrast"/>
-          <Dialog v-model:visible="productSetPopup" modal :dismissableMask="true" :style="{ width: 'calc(100% - 16px)', minWidth:'300px', maxWidth:'700px' }" class="custom-dialog-center">
-            <template #header>
-                <div class="inline-flex items-center justify-center gap-2">
-                    <span class="text-sm font-bold whitespace-nowrap ">제품 선택</span>
+            <div class="flex gap-2">
+                <div class="w-[calc(12.5%-0.5rem)]" v-for="(product, pIndex) in item['productList']" :key="pIndex">
+                    <ProductCard :aspectRatio="true" :item="product" :gkCd="item['gkCd']" />
                 </div>
-            </template>
-            <productSetPop/>
-        </Dialog>
-      </div>
+            </div>
+        </section>
+        <div class="fiex-add-btn">
+            <Button label="신규 등록" size="large" icon="pi pi-plus" class="shadow-lg" @click="getPopup" severity="contrast"/>
+            <Dialog v-model:visible="popup['pop']['productSet']" modal :dismissableMask="true" :style="{ width: 'calc(100% - 16px)', minWidth:'300px', maxWidth:'700px' }" class="custom-dialog-center">
+                <template #header>
+                    <div class="inline-flex items-center justify-center gap-2">
+                        <span class="text-sm font-bold whitespace-nowrap">제품 선택</span>
+                    </div>
+                </template>
+                <productSetPop/>
+            </Dialog>
+        </div>
     </div>
-  </template>
+</template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import ProductCard from '@/components/card/ProductCard.vue';
-import { useRouter } from 'vue-router';
 import Dialog from 'primevue/dialog';
 import productSetPop from '@/views/include/productSet.vue'
+import { useRouter } from 'vue-router';
+import { onMounted } from 'vue';
+import { useStateStore, usePopupStore, useMainStore, useProductStore } from '@/stores';
 
-const productSetPopup = ref(false);
+const router    = useRouter();
+const state     = useStateStore();
+const popup     = usePopupStore();
+const main      = useMainStore();
+const product   = useProductStore();
 
-
-const slides = ref([
-    { image: '/src/assets/imgs/test_08.png', alt: 'Slide 1' },
-    { image: '/src/assets/imgs/test_07.png', alt: 'Slide 2' },
-    { image: '/src/assets/imgs/test_06.png', alt: 'Slide 3' },
-    { image: '/src/assets/imgs/test_05.png', alt: 'Slide 1' },
-    { image: '/src/assets/imgs/test_04.png', alt: 'Slide 2' },
-    { image: '/src/assets/imgs/test_03.png', alt: 'Slide 3' },
-    { image: '/src/assets/imgs/test_02.png', alt: 'Slide 1' },
-    { image: '/src/assets/imgs/test_09.png', alt: 'Slide 1' },
-]);
-
-
-const slides2 = ref([
-    { image: '/src/assets/imgs/test_13.png', alt: 'Slide 1' },
-    { image: '/src/assets/imgs/test_img.png', alt: 'Slide 2' },
-    { image: '/src/assets/imgs/test_11.png', alt: 'Slide 3' },
-    { image: '/src/assets/imgs/test_10.png', alt: 'Slide 2' },
-    { image: '/src/assets/imgs/test_09.png', alt: 'Slide 2' },
-    { image: '/src/assets/imgs/test_07.png', alt: 'Slide 3' },
-    { image: '/src/assets/imgs/test_02.png', alt: 'Slide 1' },
-    { image: '/src/assets/imgs/test_02.png', alt: 'Slide 1' },
-]);
-
-const router = useRouter(); // 라우터 인스턴스 가져오기
-
-const goTokeywordView = () => {
-router.push('/detail'); // 경로 이동
+const getMove = async (gkCd: string) => {
+    await state.setGkCd(gkCd);
+    router.push('/detail');
 };
 
+const getPopup = async () => {
+    await popup.getOpen('productSet');
+    await product.setReset();
+}
+
+onMounted(async () => {
+    await main.setItemGb('C');
+    await main.getItemData();
+});
 
 </script>
 
