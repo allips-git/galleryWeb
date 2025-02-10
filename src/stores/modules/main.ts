@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { getAxiosData } from '@/assets/js/function';
+import { getAxiosData, getTokenOut } from '@/assets/js/function';
 import { useLoginStore } from '@/stores';
 
 interface ProductList {
@@ -78,6 +78,14 @@ export const useMainStore = defineStore('main', {
             catch(e)
             {
                 console.log(e);
+                if(e.response.status === 401)
+                {
+                    getTokenOut();
+                }
+                else
+                {
+                    alert('제품 리스트 조회 중 오류가 발생하였습니다. 지속될 경우 관리자에게 문의하세요.');
+                }
             }
         },
         async getItemData()
@@ -129,6 +137,14 @@ export const useMainStore = defineStore('main', {
             catch(e)
             {
                 console.log(e);
+                if(e.response.status === 401)
+                {
+                    getTokenOut();
+                }
+                else
+                {
+                    alert('제품 리스트 조회 중 오류가 발생하였습니다. 지속될 경우 관리자에게 문의하세요.');
+                }
             }
         },
         setItemGb(itemGb: B | C)
