@@ -188,7 +188,10 @@ const getImageCheck = (icCd: string, index: number) => {
             }
             else
             {
-                if(fileInfo['url'] && fileInfo['delYn'] === 'N')
+                const fileSeq   = index + 1;
+                const file      = info['imgFile'].find(item => item['fileSeq'] === fileSeq);
+
+                if(file && file['url'] && file['delYn'] === 'N')
                 {
                     return false;
                 }
@@ -200,7 +203,17 @@ const getImageCheck = (icCd: string, index: number) => {
         }
         else
         {
-            return true;
+            const fileSeq   = index + 1;
+            const file      = info['imgFile'].find(item => item['fileSeq'] === fileSeq);
+
+            if(file && file['url'] && file['delYn'] === 'N')
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
     }
     else
@@ -282,14 +295,31 @@ const getImage = (icCd: string, index: number) => {
     {
         const fileInfo = info['imgFile'][index];
 
-        if(fileInfo['newGb'])
+        if(fileInfo)
         {
-            return URL.createObjectURL(fileInfo['file']);
+            if(fileInfo['newGb'])
+            {
+                return URL.createObjectURL(fileInfo['file']);
+            }
+            else
+            {
+                const fileSeq   = index + 1;
+                const file      = info['imgFile'].find(item => item['fileSeq'] === fileSeq);
+
+                return file['url'];
+            }
         }
         else
         {
-            return fileInfo['url'];
+            const fileSeq   = index + 1;
+            const file      = info['imgFile'].find(item => item['fileSeq'] === fileSeq);
+
+            return file['url'];
         }
+    }
+    else
+    {
+        return '';
     }
 }
 
@@ -345,7 +375,7 @@ const getProductSave = async () => {
         type: 'application/json'
     }));
 
-    formData.append('repFile', product['info']['repImg']);
+    formData.append('repFile', product['info']['repImg']['file']);
 
     product['info']['icList'].forEach(item => {
         item['imgFile'].forEach(file => {

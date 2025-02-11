@@ -240,15 +240,36 @@ export const useProductStore = defineStore('product', {
         },
         setImage(icCd: string, index: number, file: file)
         {
+            console.log(index);
             const info  = this.info['icList'].find(item => item['icCd'] === icCd);
             const image = info.imgFile[index];
 
             if(image)
             {
-                image.newGb = true;
-                image.file  = file;
-                image.url   = null;
-                image.delYn = 'N';
+                const fileSeq   = index + 1;
+                const fileData  = info['imgFile'].find(item => item['fileSeq'] === fileSeq);
+
+                if(fileData)
+                {
+                    fileData.newGb = true;
+                    fileData.file  = file;
+                    fileData.url   = null;
+                    fileData.delYn = 'N';
+                }
+                else
+                {
+                    info['imgFile'].push({
+                        fileSeq : fileSeq,
+                        newGb   : true,
+                        file    : file,
+                        url     : null,
+                        delYn   : 'N'
+                    });
+
+                    info['imgFile'].sort((a, b) => {
+                        return a.fileSeq - b.fileSeq;
+                    });
+                }
             }
             else
             {
@@ -259,7 +280,13 @@ export const useProductStore = defineStore('product', {
                     url     : null,
                     delYn   : 'N'
                 });
+
+                info['imgFile'].sort((a, b) => {
+                    return a.fileSeq - b.fileSeq;
+                });
             }
+
+            console.log(this.info);
         },
         fileDelete(icCd: string, index: number)
         {
