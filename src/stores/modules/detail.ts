@@ -61,6 +61,14 @@ export const useDetailStore = defineStore('detail', {
             catch(e)
             {
                 console.log(e);
+                if(e.response.status === 401)
+                {
+                    getTokenOut();
+                }
+                else
+                {
+                    alert('제품 리스트 조회 중 오류가 발생하였습니다. 지속될 경우 관리자에게 문의하세요.');
+                }
             }
         }
     }

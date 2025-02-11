@@ -1,4 +1,5 @@
 import { useLoginStore } from '@/stores';
+import router from '@/router';
 import axios from 'axios';
 
 /**
@@ -15,13 +16,12 @@ export const getFileCheck = (file: File, size: number): string | boolean => {
 
     if (!allowedExtensions.includes(fileExtension)) 
     {
-        return { stat : false, msg : t('toast.invalid_file_format_image') }
+        return { stat : false, msg : '올바른 파일 형식이 아닙니다. jpg, png, pdf 형식만 가능합니다.' }
     }
   
     const maxSize: number = size * 1024 * 1024;
 
     if (file.size > maxSize) 
-        
     {
         return { stat : false, msg : `파일 크기가 ${size}MB를 초과합니다.` };
     }

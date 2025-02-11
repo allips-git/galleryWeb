@@ -23,23 +23,26 @@ interface ImgFile {
 interface IcList {
     icCd        : string;
     icNm        : string;
-    repYn       : boolean;
     imgFile     : ImgFile[];
 }
 
 interface Info {
-    glCd        : string;   /** 고유코드 */
-    itemCd      : string;   /** 제품코드 */
-    itemNm      : string;   /** 제품명칭 */
-    texture     : string;   /** 재질 */
-    rate        : null | number;   /** 암막율 */
-    etc         : string;   /** 기타 부속 */
-    origin      : string;   /** 원재료 국가 */
-    flame       : Y | N;    /** 방염가능여부 */
-    prodChar    : string;   /** 제품특성 */
-    itemGb      : string;   /** 제품구분(커튼 / 블라인드) */
-    gkCd        : string;   /** 제품키워드 코드 */
-    icList      : IcList[]; /** 제품색상 리스트 */
+    glCd        : string;           /** 고유코드 */
+    itemCd      : string;           /** 제품코드 */
+    itemNm      : string;           /** 제품명칭 */
+    texture     : string;           /** 재질 */
+    rate        : null | number;    /** 암막율 */
+    etc         : string;           /** 기타 부속 */
+    origin      : string;           /** 원재료 국가 */
+    flame       : Y | N;            /** 방염가능여부 */
+    prodChar    : string;           /** 제품특성 */
+    itemGb      : string;           /** 제품구분(커튼 / 블라인드) */
+    gkCd        : string;           /** 제품키워드 코드 */
+    repImg      : {                 /** 대표이미지 */
+        newGb   : boolean;
+        file    : null | file;
+    }
+    icList      : IcList[];         /** 제품색상 리스트 */
 }
 
 interface State {
@@ -66,6 +69,10 @@ const getInfo = (): Info => {
         prodChar    : '',
         itemGb      : 'C',
         gkCd        : 'GK0001',
+        repImg      : {
+            newGb   : false,
+            file    : null
+        },
         icList      : []
     }
 }
@@ -93,8 +100,6 @@ export const useProductStore = defineStore('product', {
                 start  : this.start,
                 limit  : this.limit
             };
-
-            console.log(params);
 
             try
             {
@@ -141,7 +146,7 @@ export const useProductStore = defineStore('product', {
                 gkCd   : gkCd,
                 itemCd : itemCd
             };
-
+            
             console.log(params);
 
             try
@@ -163,11 +168,14 @@ export const useProductStore = defineStore('product', {
                     prodChar    : res.data['prodChar'],
                     itemGb      : res.data['itemGb'],
                     gkCd        : gkCd,
+                    repImg      : {
+                        newGb : false,
+                        file  : fileUrl+res.data['repFile']['filePath'],
+                    },
                     icList      : res.data['list'].map(item => {
                         return {
                             icCd    : item.icCd,
                             icNm    : item.icNm,
-                            repYn   : item.repYn === 'Y' ? true : false,
                             imgFile : item.files.map(file => {
                                 return {
                                     fileSeq : file.fileSeq,
@@ -206,40 +214,62 @@ export const useProductStore = defineStore('product', {
         {
             this.icCd = icCd;
         },
-        setRep()
-        {
-            this.info['icList'].map(item => item['repYn'] = false);
-
-            const info    = this.info['icList'].find(item => item['icCd'] === this.icCd);
-            info['repYn'] = true;
-        },
         setProductInfo(itemCd: string)
         {
             const info = this.list.find(item => item.itemCd === itemCd);
 
             this.info.itemCd = info.itemCd;
             this.info.itemNm = info.itemNm;
-            this.info.icList = info.icList.map((item, index) => {
+            this.info.icList = info.icList.map(item => {
                 return {
                     icCd    : item.icCd,
                     icNm    : item.icNm,
-                    repYn   : index === 0 ? true : false,
                     imgFile : []
                 }
             });
         },
+        setRepImage(file: file)
+        {
+            this.info.repImg.newGb = true;
+            this.info.repImg.file  = file;
+        },
+        repFileDelete()
+        {
+            this.info.repImg.newGb = true;
+            this.info.repImg.file  = null;
+        },
         setImage(icCd: string, index: number, file: file)
         {
+            console.log(index);
             const info  = this.info['icList'].find(item => item['icCd'] === icCd);
-
             const image = info.imgFile[index];
 
             if(image)
             {
-                image.newGb = true;
-                image.file  = file;
-                image.url   = null;
-                image.delYn = 'N';
+                const fileSeq   = index + 1;
+                const fileData  = info['imgFile'].find(item => item['fileSeq'] === fileSeq);
+
+                if(fileData)
+                {
+                    fileData.newGb = true;
+                    fileData.file  = file;
+                    fileData.url   = null;
+                    fileData.delYn = 'N';
+                }
+                else
+                {
+                    info['imgFile'].push({
+                        fileSeq : fileSeq,
+                        newGb   : true,
+                        file    : file,
+                        url     : null,
+                        delYn   : 'N'
+                    });
+
+                    info['imgFile'].sort((a, b) => {
+                        return a.fileSeq - b.fileSeq;
+                    });
+                }
             }
             else
             {
@@ -249,6 +279,10 @@ export const useProductStore = defineStore('product', {
                     file    : file,
                     url     : null,
                     delYn   : 'N'
+                });
+
+                info['imgFile'].sort((a, b) => {
+                    return a.fileSeq - b.fileSeq;
                 });
             }
 

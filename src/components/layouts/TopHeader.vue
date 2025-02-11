@@ -5,7 +5,7 @@
         <router-link class="" to="/"><p class="text-2xl font-bold whitespace-nowrap">Plan Order GALLERY</p></router-link>
     </div>
 
-    <ul class="flex gap-5">
+    <ul v-if="login['code']" class="flex gap-5">
         <li
         v-for="item in topHeaderItems"
         :key="item.id"
@@ -29,7 +29,7 @@
           <button class="flex items-center justify-center size-8 text-muted-color" @click="toggleNotificationPopover($event)">
               <IconAvatar class="*:text-blue-200 !size-10 "/>
           </button>
-          <p class="text-gray-500 dark:text-gray-300">김준구 대리</p>
+          <p class="text-gray-500 dark:text-gray-300">{{ login['name'] }}</p>
         </div>
         <Popover class="" ref="notificationPopover" dismissable>
             <div class="flex flex-col">
@@ -49,7 +49,10 @@
 import { ref, nextTick } from 'vue';
 import IconAvatar from '@/components/icons/IconAvatar.vue'
 import { useRouter, useRoute } from 'vue-router';
+import { useLoginStore } from '@/stores';
+
 const route = useRoute();
+const login = useLoginStore();
 
 // Vue Router 가져오기
 const router = useRouter();
@@ -60,6 +63,11 @@ const topHeaderItems = ref([
     { id: 3, label: '커튼', link: '/curtain'},
 ]);
 
+const getLogOut = () => {
+    alert('로그아웃 되었습니다.');
+    login.getLogout();
+    router.push('/login');
+}
 
 // 클릭 핸들러
 const handleClick = (item: { id: number; link: string; label: string }) => {

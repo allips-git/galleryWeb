@@ -77,8 +77,25 @@
         </div>
       </section>
       <div class="gray-bar"></div>
-      <section class="px-5">
-            <h1 class="py-3 text-2xl font-bold">색상 설정</h1>
+      <section v-if="product['info']['itemCd'] !== ''" class="px-5">
+            <h1 class="py-3 text-2xl font-bold">대표 사진</h1>
+                <section class="first:mt-0">
+                    <ul class="flex justify-between w-full gap-2 mt-4">
+                        <li class="relative flex items-center justify-center  w-[calc(25%-0.5rem)] overflow-hidden bg-gray-100 rounded-lg aspect-square">
+                            <div v-if="!product['info']['repImg']['file']" class="flex flex-col items-center justify-center gap-2" @click="getRepBtn">
+                                <div class="flex items-center justify-center bg-gray-300 rounded-full size-10">
+                                    <span class="pi pi-plus !text-lg"></span>
+                                </div>
+                                <span class="">대표사진 업로드</span>
+                            </div>
+                            <div v-else class="absolute inset-0">
+                                <img :src="getRepImage()" class="w-full h-full aspect-square" @click="getRepBtn"/>
+                            </div>
+                            <input type="file" ref="repImg" style="display:none" accept="image/*" @change="getRep"/>
+                        </li>
+                    </ul>
+                </section>
+            <h1 class="mt-10 py-3 text-2xl font-bold">색상 설정</h1>
             <div>
                 <!-- 색상 v-for -->
                 <section v-for="(item, mIndex) in product['info']['icList']" :key="mIndex" class="mt-10 first:mt-0">
@@ -87,11 +104,6 @@
                             <p class="whitespace-nowrap">색상이름</p>
                             <InputText :value="item['icNm']" readonly class="w-full max-w-96"/>
                         </div>
-                        <div v-if="item['repYn']" class="flex items-center justify-center gap-1 px-3 py-0.5 bg-gray-100 dark:bg-zinc-800 dark:border-zinc-800 border border-gray-200 rounded-full">
-                            <div class="rounded-full size-3 bg-sky-500"></div>
-                            <p class="whitespace-nowrap">대표사진</p>
-                        </div>
-                        <Button icon="pi pi-ellipsis-v" size="large" text plain @click="(e) => getToggle(e, item['icCd'])"/>
                     </div>
                     <ul class="flex justify-between w-full gap-2 mt-4">
                         <li v-for="(_, index) in Array(4)" :key="index"
@@ -112,11 +124,6 @@
                         </li>
                     </ul>
                 </section>
-                <Popover class="custom-popover-listbox" ref="morePopover" dismissable>
-                    <ul class="w-[150px]">
-                        <li class="w-full px-3 py-2 font-bold text-sky-500 hover:bg-gray-50" @click="getRep">대표사진 등록</li>
-                    </ul>
-                </Popover>
             </div>
         </section>
         <div class="absolute bottom-0 flex justify-end w-full gap-2 px-5 py-2 bg-white border-t border-gray-100 dark:border-gray-800 dark:bg-netblack">
@@ -146,7 +153,7 @@ import Textarea from 'primevue/textarea';
 import codeViewTable from '@/views/include/codeViewTable.vue';
 import { ref } from 'vue';
 import { useDataStore, usePopupStore, useLoginStore, useMainStore, useProductStore } from '@/stores';
-import { getAxiosData, getFileCheck } from '@/assets/js/function';
+import { getAxiosData, getFileCheck, getTokenOut } from '@/assets/js/function';
 
 const data      = useDataStore();
 const popup     = usePopupStore();
@@ -154,13 +161,10 @@ const login     = useLoginStore();
 const main      = useMainStore();
 const product   = useProductStore();
 const status    = ref(false);
+const repImg    = ref<HTMLInputElement | null>(null);
 const imgFile   = ref<Record<string, HTMLInputElement | null>>({});
 
-const morePopover       = ref();
-const getToggle = (event: Event, icCd: string) => {
-    morePopover.value.toggle(event);
-    product.setIcCd(icCd);
-};
+const morePopover = ref();
 
 const getImageCheck = (icCd: string, index: number) => {
     const info = product['info']['icList'].find(item => item['icCd'] === icCd);
@@ -184,7 +188,10 @@ const getImageCheck = (icCd: string, index: number) => {
             }
             else
             {
-                if(fileInfo['url'] && fileInfo['delYn'] === 'N')
+                const fileSeq   = index + 1;
+                const file      = info['imgFile'].find(item => item['fileSeq'] === fileSeq);
+
+                if(file && file['url'] && file['delYn'] === 'N')
                 {
                     return false;
                 }
@@ -196,12 +203,58 @@ const getImageCheck = (icCd: string, index: number) => {
         }
         else
         {
-            return true;
+            const fileSeq   = index + 1;
+            const file      = info['imgFile'].find(item => item['fileSeq'] === fileSeq);
+
+            if(file && file['url'] && file['delYn'] === 'N')
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
     }
     else
     {
         return true;
+    }
+}
+
+const getRepBtn = () => {
+    repImg.value.click();
+}
+
+const getRep = () => {
+    const file = repImg.value.files[0];
+    const fileCheck = getFileCheck(file, 10);
+
+    if(!fileCheck['stat'])
+    {
+        alert(fileCheck['msg']);
+        return false;
+    }
+
+    if(file)
+    {
+        const reader = new FileReader();
+        reader.onload = () => {
+            product.setRepImage(file);
+        };
+
+        reader.readAsDataURL(file);
+    }
+}
+
+const getRepImage = () => {
+    if(product['info']['repImg']['newGb'])
+    {
+        return URL.createObjectURL(product['info']['repImg']['file']);
+    }
+    else
+    {
+        return product['info']['repImg']['file'];
     }
 }
 
@@ -242,23 +295,47 @@ const getImage = (icCd: string, index: number) => {
     {
         const fileInfo = info['imgFile'][index];
 
-        if(fileInfo['newGb'])
+        if(fileInfo)
         {
-            return URL.createObjectURL(fileInfo['file']);
+            if(fileInfo['newGb'])
+            {
+                return URL.createObjectURL(fileInfo['file']);
+            }
+            else
+            {
+                const fileSeq   = index + 1;
+                const file      = info['imgFile'].find(item => item['fileSeq'] === fileSeq);
+
+                return file['url'];
+            }
         }
         else
         {
-            return fileInfo['url'];
+            const fileSeq   = index + 1;
+            const file      = info['imgFile'].find(item => item['fileSeq'] === fileSeq);
+
+            return file['url'];
         }
+    }
+    else
+    {
+        return '';
     }
 }
 
-const getRep = () => {
-    product.setRep();
-    morePopover.value.hide();
-}
-
 const getProductSave = async () => {
+    if(product['info']['itemCd'] === '')
+    {
+        alert('제품을 선택해주세요.');
+        return false;
+    }
+
+    if(!product['info']['repImg']['file'])
+    {
+        alert('대표사진은 업로드가 필요합니다.');
+        return false;
+    }
+
     const formData  = new FormData();
     const data      = {
         code    : login['code'],
@@ -279,7 +356,6 @@ const getProductSave = async () => {
     params['details'] = product['info']['icList'].map(item => {
         return {
             icCd    : item['icCd'],
-            repYn   : item['repYn'] ? 'Y' : 'N',
             files   : item['imgFile'].filter(file => file.newGb || file.delYn === 'Y').map(file => {
                 const fileData = {
                     fileSeq : file.fileSeq,
@@ -298,6 +374,8 @@ const getProductSave = async () => {
     formData.append('request', new Blob([JSON.stringify(params)], {
         type: 'application/json'
     }));
+
+    formData.append('repFile', product['info']['repImg']['file']);
 
     product['info']['icList'].forEach(item => {
         item['imgFile'].forEach(file => {
@@ -329,8 +407,15 @@ const getProductSave = async () => {
     }
     catch(e)
     {
-        alert('제품 등록 및 수정에 실패하였습니다. 지속될 경우 관리자에게 문의하세요.');
         console.log(e);
+        if(e.response.status === 401)
+        {
+            getTokenOut();
+        }
+        else
+        {
+            alert(e.response.data);
+        }
     }
 
     status.value = false;
