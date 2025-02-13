@@ -57,15 +57,15 @@
                 <p class="w-[120px]">제품 키워드</p>
                 <div class="flex w-full gap-5 max-w-96">
                     <div class="flex items-center gap-2">
-                      <RadioButton inputId="curtain" v-model="product['info']['itemGb']" :value="'C'"/>
+                      <RadioButton inputId="curtain" v-model="product['info']['itemGb']" :value="'C'" @click="product.setItemGb('C')"/>
                       <label for="curtain">커튼</label>
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <RadioButton inputId="blind" v-model="product['info']['itemGb']" :value="'B'"/>
+                        <RadioButton inputId="blind" v-model="product['info']['itemGb']" :value="'B'" @click="product.setItemGb('B')"/>
                         <label for="blind">블라인드</label>
                     </div>
-                    <Select :options="data['keyword']" v-model="product['info']['gkCd']" optionLabel="name" optionValue="value" placeholder="키워드 선택" />
+                    <Select :options="getKeyword()" v-model="product['info']['gkCd']" optionLabel="name" optionValue="value" placeholder="키워드 선택" />
                 </div>
             </li>
         </ul>
@@ -171,6 +171,10 @@ const morePopover = ref();
 
 const getMorePopover = (event: Event) => {
     morePopover.value.toggle(event);
+}
+
+const getKeyword = () => {
+    return data['keyword'].filter(item => item.itemGb === product['info']['itemGb']);
 }
 
 const getImageCheck = (icCd: string, index: number) => {
@@ -365,6 +369,13 @@ const getProductSave = async () => {
     if(!product['info']['repImg']['file'])
     {
         alert('대표사진은 업로드가 필요합니다.');
+        return false;
+    }
+
+    const colorImage = product['info']['icList'].some(item => item['imgFile'].some(file => file.newGb || (file.url && file.delYn === 'N')));
+    if (!colorImage) 
+    {
+        alert('색상별 이미지가 최소 1개 이상 등록되어야 합니다.');
         return false;
     }
 

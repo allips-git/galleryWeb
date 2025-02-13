@@ -68,7 +68,7 @@ const getInfo = (): Info => {
         flame       : 'Y',
         prodChar    : '',
         itemGb      : 'C',
-        gkCd        : 'GK0001',
+        gkCd        : 'GK0008',
         repImg      : {
             newGb   : false,
             file    : null
@@ -159,7 +159,7 @@ export const useProductStore = defineStore('product', {
                 const info = {
                     glCd        : res.data['glCd'],
                     itemCd      : itemCd,
-                    itemNm      : '',
+                    itemNm      : res.data['itemNm'],
                     texture     : res.data['texture'],
                     rate        : res.data['rate'],
                     etc         : res.data['etc'],
@@ -243,6 +243,17 @@ export const useProductStore = defineStore('product', {
             this.type = 'I';
             this.info = getInfo();
         },
+        setItemGb(itemGb: B | C)
+        {
+            if(itemGb === 'B')
+            {
+                this.info.gkCd = 'GK0001';
+            }
+            else
+            {
+                this.info.gkCd = 'GK0008';
+            }
+        },
         setIcCd(icCd: string)
         {
             this.icCd = icCd;
@@ -259,7 +270,9 @@ export const useProductStore = defineStore('product', {
                     icNm    : item.icNm,
                     imgFile : []
                 }
-            });
+            }).sort((a, b) => a.icCd.localeCompare(b.icCd));
+
+            console.log(this.info.icList);
         },
         setRepImage(file: file)
         {
