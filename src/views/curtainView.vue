@@ -14,7 +14,7 @@
         </section>
         <div class="fiex-add-btn">
             <Button label="신규 등록" size="large" icon="pi pi-plus" class="shadow-lg" @click="getPopup" severity="contrast"/>
-            <Dialog v-model:visible="popup['pop']['productSet']" modal :dismissableMask="true" :style="{ width: 'calc(100% - 16px)', minWidth:'300px', maxWidth:'700px' }" class="custom-dialog-center">
+            <Dialog blockScroll v-model:visible="popup['pop']['productSet']" modal :dismissableMask="true" :style="{ width: 'calc(100% - 16px)', minWidth:'300px', maxWidth:'700px' }" class="custom-dialog-center">
                 <template #header>
                     <div class="inline-flex items-center justify-center gap-2">
                         <span class="text-sm font-bold whitespace-nowrap">제품 선택</span>
