@@ -205,6 +205,39 @@ export const useProductStore = defineStore('product', {
                 }
             }
         },
+        async getItemDelete()
+        {
+            const loginStore = useLoginStore();
+            const params     = {
+                code    : loginStore['code'],
+                itemCd  : this.info['itemCd'],
+                userCd  : loginStore['userCd']
+            };
+
+            console.log(params);
+
+            try
+            {
+                const instance  = await getAxiosData();
+                await instance.delete(`https://gallery-data.plansys.kr/keyword/deleteData`, { data : params });
+
+                return true;
+            }
+            catch(e)
+            {
+                console.log(e);
+                if(e.response.status === 401)
+                {
+                    getTokenOut();
+                }
+                else
+                {
+                    alert('제품 삭제 중 오류가 발생하였습니다. 지속될 경우 관리자에게 문의하세요.');
+                }
+
+                return false;
+            }
+        },
         setReset()
         {
             this.type = 'I';

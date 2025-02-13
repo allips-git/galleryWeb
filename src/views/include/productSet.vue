@@ -2,11 +2,11 @@
     <div class="pb-20">
       <section class="px-5">
         <div class="flex items-center justify-between">
-            <h1 class="py-3 text-2xl font-bold">제품명</h1>
-            <Button icon="pi pi-ellipsis-v" size="large" text plain severity="contrast"/>
+            <h1 class="py-3 text-2xl font-bold">{{ product['info']['itemNm'] === '' ? '제품명' : product['info']['itemNm'] }}</h1>
+            <Button v-if="product['type'] === 'U'" icon="pi pi-ellipsis-v" size="large" text plain severity="contrast" @click="getMorePopover"/>
             <Popover class="custom-popover-listbox" ref="morePopover" dismissable>
                 <ul class="w-[150px]">
-                    <li class="w-full px-3 py-2 text-red-500 hover:bg-red-50">제품 삭제</li>
+                    <li class="w-full px-3 py-2 text-red-500 hover:bg-red-50" @click="getItemDelete">제품 삭제</li>
                 </ul>
             </Popover>
         </div>
@@ -152,19 +152,26 @@ import InputIcon from 'primevue/inputicon';
 import Textarea from 'primevue/textarea';
 import codeViewTable from '@/views/include/codeViewTable.vue';
 import { ref } from 'vue';
-import { useDataStore, usePopupStore, useLoginStore, useMainStore, useProductStore } from '@/stores';
+import { useRoute } from 'vue-router';
+import { useDataStore, usePopupStore, useLoginStore, useMainStore, useProductStore,useDetailStore } from '@/stores';
 import { getAxiosData, getFileCheck, getTokenOut } from '@/assets/js/function';
 
+const route     = useRoute();
 const data      = useDataStore();
 const popup     = usePopupStore();
 const login     = useLoginStore();
 const main      = useMainStore();
 const product   = useProductStore();
+const detail    = useDetailStore();
 const status    = ref(false);
 const repImg    = ref<HTMLInputElement | null>(null);
 const imgFile   = ref<Record<string, HTMLInputElement | null>>({});
 
 const morePopover = ref();
+
+const getMorePopover = (event: Event) => {
+    morePopover.value.toggle(event);
+}
 
 const getImageCheck = (icCd: string, index: number) => {
     const info = product['info']['icList'].find(item => item['icCd'] === icCd);
@@ -320,6 +327,31 @@ const getImage = (icCd: string, index: number) => {
     else
     {
         return '';
+    }
+}
+
+const getItemDelete = async () => {
+    morePopover.value.hide();
+    if(confirm('제품을 삭제하시겠습니까?'))
+    {
+        await product.getItemDelete().then( async (result) => {
+            if(result)
+            {
+                alert('제품이 삭제되었습니다.');
+                switch(route.path)
+                {
+                    case '/blind': case '/curtain':
+                        await main.getItemData();
+                    break;
+                    case '/detail':
+                        await detail.getData();
+                    break;
+                    default:
+                        await main.getData();
+                }
+                popup.getClose('productSet');
+            }
+        });
     }
 }
 
