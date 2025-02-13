@@ -1,10 +1,10 @@
 <template>
     <Dialog v-model:visible="visible"
-        pt:root:class="!border-0 !bg-transparent w-full sm:w-[400px] sm:h-auto h-full !max-h-screen" 
+        pt:root:class="!border-0 !bg-transparent w-full sm:w-[400px] sm:h-auto h-full !max-h-screen"
         pt:mask:class="bg-white backdrop-blur-sm">
         <template #container>
             <BackHeader title="로그인"  class="md:hidden" />
-            <div class="flex flex-col px-4 pb-8 mt-5 rounded-2xl sm:mt-10">
+            <div class="flex flex-col px-6 pb-8 mt-5 rounded-2xl sm:mt-10">
                 <div class="flex flex-col items-center justify-center">
                     <IconLogo class="w-[3.25rem] fill-[#00AEF2]"/>
                     <p class="w-full mt-[1.5625rem] mb-10 text-lg font-bold text-center noto"><span class="text-[#00AEF2] rext">GALLERY</span></p>
@@ -22,12 +22,12 @@
                         <InputText id="pw" v-model="pwData" placeholder="비밀번호를 입력해주세요." type="password" @keyup.enter="getEnter" class="w-full"/>
                     </div>
                 </div>
-                <Button label="이메일 로그인" class="w-full mt-6" @click="getLogin"/>
+                <Button label="이메일 로그인" class="w-full mt-10" @click="getLogin"/>
             </div>
         </template>
     </Dialog>
 </template>
-    
+
 <script setup lang="ts">
 import Dialog from 'primevue/dialog';
 import IconLogo from '@/components/icons/IconLogo.vue'
@@ -59,10 +59,10 @@ const getEnter = () => {
 
 const getLogin = async () => {
     const params = {
-        id : idData.value, 
+        id : idData.value,
         pw : pwData.value
     };
-    
+
     const result = await login.getLogin(params);
 
     if(result)
